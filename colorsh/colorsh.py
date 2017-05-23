@@ -20,8 +20,8 @@ class Formatting(IntEnum):
 
 
 class Term8Color(IntEnum):
-    fg_normal = 30
-    bg_normal = 40
+    fg_dark = 30
+    bg_dark = 40
     fg_bright = 90
     bg_bright = 100
 
@@ -36,10 +36,77 @@ class Term8(IntEnum):
     cyan = 6
     white = 7
 
+class Term16(IntEnum):
+    black = 0
+    maroon = 1
+    green = 2
+    olive = 3
+    navy = 4
+    purple = 5
+    teal = 6
+    silver = 7
+    grey = 8
+    red = 9
+    lime = 10
+    yellow = 11
+    blue = 12
+    fuchsia = 13
+    aqua = 14
+    white = 15
 
-def map_enum(enumerator, name):
-    for n, member in enumerator.__members__.items():
-        return member if n == name.lower().strip() else None
+
+class Color:
+    def __init__(self, data):
+        if type(data) is int:
+            self._parse_as_int(data)
+        elif type(data) is str:
+            self._parse_as_str(data)
+
+    _name = None
+    _value = None
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def value(self):
+        return self._value
+
+    @name.setter
+    def name(self, new):
+        self._name = new
+        enum_member = get_member_with_name(Term16, new)
+        self._value = enum_member.value if enum_member is not None else None
+
+    @value.setter
+    def value(self, new):
+        self._value = new
+        enum_member = get_member_with_value(Term16, new)
+        self._name = enum_member.name if enum_member is not None else None
+
+    def _parse_as_int(self, item):
+        self.value = item if item >= 0 and item <= 255 else None
+
+    def _parse_as_str(self, item):
+        try:
+            self._parse_as_int(int(item))
+        except ValueError:
+            if get_member_with_name(Term16, item) is not None:
+                self.name = item
+
+
+def get_member_with_name(enumerator, name):
+    for nm, member in enumerator.__members__.items():
+        if nm == name.lower().strip():
+            return member
+    return None
+
+def get_member_with_value(enumerator, value):
+    for va, member in enumerator.__members__.items():
+        if member.value == value:
+            return member
+    return None
 
 
 class Colorsh:
@@ -55,7 +122,7 @@ class Colorsh:
 
         # build fg color
         if type(fg) is Term8:
-            fg = ";{}".format(Term8Color.fg_normal.value + fg.value)
+            fg = ";{}".format(Term8Color.fg_bright.value + fg.value)
         elif Colorsh._is_proper_numeric(fg):
             fg = ";38;5;{}".format(fg)
         else:
@@ -63,7 +130,7 @@ class Colorsh:
 
         # build bg color
         if type(bg) is Term8:
-            bg = ";{}".format(Term8Color.fg_normal.value + bg.value)
+            bg = ";{}".format(Term8Color.fg_bright.value + bg.value)
         elif Colorsh._is_proper_numeric(bg):
             bg = ";48;5;{}".format(bg)
         else:
