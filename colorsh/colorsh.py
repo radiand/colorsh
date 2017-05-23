@@ -19,23 +19,6 @@ class Formatting(IntEnum):
     fast_blink = 6
 
 
-class Term8Color(IntEnum):
-    fg_dark = 30
-    bg_dark = 40
-    fg_bright = 90
-    bg_bright = 100
-
-
-class Term8(IntEnum):
-    black = 0
-    red = 1
-    green = 2
-    yellow = 3
-    blue = 4
-    magenta = 5
-    cyan = 6
-    white = 7
-
 class Term16(IntEnum):
     black = 0
     maroon = 1
@@ -61,6 +44,8 @@ class Color:
             self._parse_as_int(data)
         elif type(data) is str:
             self._parse_as_str(data)
+        elif type(data) is Term16:
+            self._parse_as_enum(data)
 
     _name = None
     _value = None
@@ -95,6 +80,10 @@ class Color:
             if get_member_with_name(Term16, item) is not None:
                 self.name = item
 
+    def _parse_as_enum(self, item):
+        self._name = item.name
+        self._value = item.value
+
 
 def get_member_with_name(enumerator, name):
     for nm, member in enumerator.__members__.items():
@@ -121,18 +110,14 @@ class Colorsh:
             fmt = Formatting.normal.value
 
         # build fg color
-        if type(fg) is Term8:
-            fg = ";{}".format(Term8Color.fg_bright.value + fg.value)
-        elif Colorsh._is_proper_numeric(fg):
-            fg = ";38;5;{}".format(fg)
+        if type(fg) is Color:
+            fg = ";38;5;{}".format(fg.value)
         else:
             fg = ""
 
         # build bg color
-        if type(bg) is Term8:
-            bg = ";{}".format(Term8Color.fg_bright.value + bg.value)
-        elif Colorsh._is_proper_numeric(bg):
-            bg = ";48;5;{}".format(bg)
+        if type(bg) is Color:
+            bg = ";48;5;{}".format(bg.value)
         else:
             bg = ""
 
@@ -142,18 +127,20 @@ class Colorsh:
     def _build_tmux(msg, fg, bg, formatting):
         # build fg
         fgs = []
-        if Colorsh._is_proper_numeric(fg):
-            fgs.append("colour{}".format(fg))
+        if type(fg) is Color:
+            fgs.append("colour{}".format(fg.value))
+
         for fmt in formatting:
             fgs.append(fmt.name)
 
         # build bg
         bgs = []
-        if Colorsh._is_proper_numeric(bg):
-            bgs.append("colour{}".format(bg))
+        if type(bg) is Color:
+            bgs.append("colour{}".format(bg.value))
 
-        return "#[{0}{1}]".format(
+        return "#[{0}{1}{2}]".format(
             "fg=" + ",".join(fgs) if fgs else "",
+            "," if fgs and bgs else "",
             "bg=" + ",".join(bgs) if bgs else "")
 
 
