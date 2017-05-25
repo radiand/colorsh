@@ -9,7 +9,7 @@ class Encoding(IntEnum):
     tmux = 2
 
 
-class Formatting(IntEnum):
+class Styles(IntEnum):
     normal = 0
     bold = 1
     faint = 2
@@ -92,7 +92,7 @@ class Style:
             self._parse_as_str(data)
         elif type(data) is list:
             self._parse_as_list(data)
-        elif type(data) is Formatting:
+        elif type(data) is Styles:
             self._parse_as_enum(data)
 
     def __init__(self, data=None):
@@ -107,12 +107,12 @@ class Style:
         return self._styles
 
     def _parse_as_int(self, item):
-        found = get_member_with_value(Formatting, item)
+        found = get_member_with_value(Styles, item)
         if found is not None:
             self._styles.append(found)
 
     def _parse_as_str(self, item):
-        found = get_member_with_name(Formatting, item)
+        found = get_member_with_name(Styles, item)
         if found is not None:
             self._styles.append(found)
 
@@ -138,12 +138,12 @@ def get_member_with_value(enumerator, value):
 
 
 class Colorsh:
-    def _build_ansi(msg, fg, bg, formatting):
+    def _build_ansi(msg, fg, bg, style):
         # build formatting
-        if formatting:
-            fmt = formatting[0].value
+        if style:
+            stl = style[0].value
         else:
-            fmt = Formatting.normal.value
+            stl = Styles.normal.value
 
         # build fg color
         if type(fg) is Color:
@@ -158,16 +158,16 @@ class Colorsh:
             bg = ""
 
         return "{0}{1}{2}{3}m{4}{5}0m".format(
-            ANSI_ESCAPE_SEQUENCE, fmt, fg, bg, msg, ANSI_ESCAPE_SEQUENCE)
+            ANSI_ESCAPE_SEQUENCE, stl, fg, bg, msg, ANSI_ESCAPE_SEQUENCE)
 
-    def _build_tmux(msg, fg, bg, formatting):
+    def _build_tmux(msg, fg, bg, style):
         # build fg
         fgs = []
         if type(fg) is Color:
             fgs.append("colour{}".format(fg.value))
 
-        for fmt in formatting:
-            fgs.append(fmt.name)
+        for s in style:
+            fgs.append(s.name)
 
         # build bg
         bgs = []
@@ -182,20 +182,20 @@ class Colorsh:
 
 
     @staticmethod
-    def decorate(msg, enc=Encoding.none, fg=None, bg=None, formatting=[]):
-        if enc is Encoding.none or not (fg or bg or formatting):
+    def decorate(msg, enc=Encoding.none, fg=None, bg=None, style=[]):
+        if enc is Encoding.none or not (fg or bg or style):
             return msg
 
         if enc is Encoding.ansi:
-            return Colorsh._build_ansi(msg, fg, bg, formatting)
+            return Colorsh._build_ansi(msg, fg, bg, style)
         if enc is Encoding.tmux:
-            return Colorsh._build_tmux(msg, fg, bg, formatting)
+            return Colorsh._build_tmux(msg, fg, bg, style)
 
     @staticmethod
-    def ansi(msg, fg=None, bg=None, formatting=[]):
-        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, formatting)
+    def ansi(msg, fg=None, bg=None, style=[]):
+        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, style)
 
     @staticmethod
-    def tmux(msg, fg=None, bg=None, formatting=[]):
-        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, formatting)
+    def tmux(msg, fg=None, bg=None, style=[]):
+        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, style)
 

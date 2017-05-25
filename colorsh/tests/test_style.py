@@ -1,5 +1,5 @@
 import unittest
-from colorsh import Style, Formatting
+from colorsh import Style, Styles
 
 class TestColorsh(unittest.TestCase):
     def test_parse_from_int_in_range(self):
@@ -21,7 +21,7 @@ class TestColorsh(unittest.TestCase):
         self.assertEqual(s.styles, [])
 
     def test_parse_from_styles_enum(self):
-        s = Style(Formatting.bold)
+        s = Style(Styles.bold)
         self.assertEqual(s.styles[0].name, "bold")
         self.assertEqual(s.styles[0].value, 1)
 
@@ -33,7 +33,7 @@ class TestColorsh(unittest.TestCase):
         self.assertEqual(s.styles[1].value, 2)
 
     def test_parse_from_not_uniform_list(self):
-        s = Style([1, "faint", Formatting.italics])
+        s = Style([1, "faint", Styles.italics])
         self.assertEqual(s.styles[0].name, "bold")
         self.assertEqual(s.styles[0].value, 1)
         self.assertEqual(s.styles[1].name, "faint")
@@ -42,7 +42,7 @@ class TestColorsh(unittest.TestCase):
         self.assertEqual(s.styles[2].value, 3)
 
     def test_parse_from_not_uniform_list_with_another_list_inside(self):
-        s = Style([1, ["faint", Formatting.italics]])
+        s = Style([1, ["faint", Styles.italics]])
         self.assertEqual(s.styles[0].name, "bold")
         self.assertEqual(s.styles[0].value, 1)
         self.assertEqual(s.styles[1].name, "faint")
