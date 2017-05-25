@@ -102,6 +102,9 @@ class Style:
         else:
             self.dispatch(data)
 
+    def __getitem__(self, key):
+        return self._styles[key]
+
     @property
     def styles(self):
         return self._styles
