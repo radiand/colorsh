@@ -99,9 +99,6 @@ def get_member_with_value(enumerator, value):
 
 
 class Colorsh:
-    def _is_proper_numeric(value):
-        return True if type(value) is int and value >= 0 and value <= 255 else False
-
     def _build_ansi(msg, fg, bg, formatting):
         # build formatting
         if formatting:
@@ -138,10 +135,11 @@ class Colorsh:
         if type(bg) is Color:
             bgs.append("colour{}".format(bg.value))
 
-        return "#[{0}{1}{2}]".format(
+        return "#[{0}{1}{2}]{3}".format(
             "fg=" + ",".join(fgs) if fgs else "",
             "," if fgs and bgs else "",
-            "bg=" + ",".join(bgs) if bgs else "")
+            "bg=" + ",".join(bgs) if bgs else "",
+            msg)
 
 
     @staticmethod
