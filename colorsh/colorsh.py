@@ -84,6 +84,45 @@ class Color:
         self._name = item.name
         self._value = item.value
 
+class Style:
+    def dispatch(self, data):
+        if type(data) is int:
+            self._parse_as_int(data)
+        elif type(data) is str:
+            self._parse_as_str(data)
+        elif type(data) is list:
+            self._parse_as_list(data)
+        elif type(data) is Formatting:
+            self._parse_as_enum(data)
+
+    def __init__(self, data=None):
+        self._styles = []
+        if data is None:
+            return
+        else:
+            self.dispatch(data)
+
+    @property
+    def styles(self):
+        return self._styles
+
+    def _parse_as_int(self, item):
+        found = get_member_with_value(Formatting, item)
+        if found is not None:
+            self._styles.append(found)
+
+    def _parse_as_str(self, item):
+        found = get_member_with_name(Formatting, item)
+        if found is not None:
+            self._styles.append(found)
+
+    def _parse_as_enum(self, item):
+        self._styles.append(item)
+
+    def _parse_as_list(self, item):
+        for it in item:
+            self.dispatch(it)
+
 
 def get_member_with_name(enumerator, name):
     for nm, member in enumerator.__members__.items():
