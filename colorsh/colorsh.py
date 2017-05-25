@@ -39,7 +39,7 @@ class Term16(IntEnum):
 
 
 class Color:
-    def __init__(self, data):
+    def __init__(self, data=None):
         if type(data) is int:
             self._parse_as_int(data)
         elif type(data) is str:
@@ -78,7 +78,7 @@ class Color:
             self._parse_as_int(int(item))
         except ValueError:
             if get_member_with_name(Term16, item) is not None:
-                self.name = item
+                self.name = item.lower().strip()
 
     def _parse_as_enum(self, item):
         self._name = item.name
