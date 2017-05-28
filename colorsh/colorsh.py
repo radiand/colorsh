@@ -3,12 +3,6 @@ from enum import IntEnum
 ANSI_ESCAPE_SEQUENCE = "\033["
 
 
-class Encoding(IntEnum):
-    none = 0
-    ansi = 1
-    tmux = 2
-
-
 class Styles(IntEnum):
     normal = 0
     bold = 1
@@ -185,20 +179,22 @@ class Colorsh:
 
 
     @staticmethod
-    def decorate(msg, enc=Encoding.none, fg=None, bg=None, style=[]):
-        if enc is Encoding.none or not (fg or bg or style):
+    def decorate(msg, enc=None, fg=None, bg=None, style=[]):
+        if enc is None or not (fg or bg or style):
             return msg
 
-        if enc is Encoding.ansi:
+        enc = enc.lower().strip()
+
+        if enc == "ansi":
             return Colorsh._build_ansi(msg, fg, bg, style)
-        if enc is Encoding.tmux:
+        if enc == "tmux":
             return Colorsh._build_tmux(msg, fg, bg, style)
 
     @staticmethod
     def ansi(msg, fg=None, bg=None, style=[]):
-        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, style)
+        return Colorsh.decorate(msg, "ansi", fg, bg, style)
 
     @staticmethod
     def tmux(msg, fg=None, bg=None, style=[]):
-        return Colorsh.decorate(msg, Encoding.ansi, fg, bg, style)
+        return Colorsh.decorate(msg, "tmux", fg, bg, style)
 

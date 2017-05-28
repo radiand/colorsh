@@ -1,1 +1,1 @@
-from colorsh.colorsh import Colorsh
+from colorsh.colorsh import Colorsh, Color, Term16, Style, Styles
