@@ -168,7 +168,7 @@ class Colorsh:
 
         # build bg
         bgs = []
-        if type(bg) is Color and fg.value is not None:
+        if type(bg) is Color and bg.value is not None:
             bgs.append("colour{}".format(bg.value))
 
         return "#[{0}{1}{2}]{3}".format(
