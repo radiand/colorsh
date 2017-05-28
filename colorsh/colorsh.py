@@ -149,13 +149,13 @@ class Colorsh:
             stl = Styles.normal.value
 
         # build fg color
-        if type(fg) is Color:
+        if type(fg) is Color and fg.value is not None:
             fg = ";38;5;{}".format(fg.value)
         else:
             fg = ""
 
         # build bg color
-        if type(bg) is Color:
+        if type(bg) is Color and bg.value is not None:
             bg = ";48;5;{}".format(bg.value)
         else:
             bg = ""
@@ -166,7 +166,7 @@ class Colorsh:
     def _build_tmux(msg, fg, bg, style):
         # build fg
         fgs = []
-        if type(fg) is Color:
+        if type(fg) is Color and fg.value is not None:
             fgs.append("colour{}".format(fg.value))
 
         for s in style:
@@ -174,7 +174,7 @@ class Colorsh:
 
         # build bg
         bgs = []
-        if type(bg) is Color:
+        if type(bg) is Color and fg.value is not None:
             bgs.append("colour{}".format(bg.value))
 
         return "#[{0}{1}{2}]{3}".format(
