@@ -137,7 +137,7 @@ def get_member_with_value(enumerator, value):
 class Colorsh:
     def _build_ansi(msg, fg, bg, style):
         # build formatting
-        if style:
+        if style.styles:
             stl = style[0].value
         else:
             stl = Styles.normal.value
@@ -179,7 +179,7 @@ class Colorsh:
 
 
     @staticmethod
-    def decorate(msg, enc=None, fg=None, bg=None, style=[]):
+    def decorate(msg, enc=None, fg=None, bg=None, style=Style([])):
         if enc is None or not (fg or bg or style):
             return msg
 
@@ -191,10 +191,10 @@ class Colorsh:
             return Colorsh._build_tmux(msg, fg, bg, style)
 
     @staticmethod
-    def ansi(msg, fg=None, bg=None, style=[]):
+    def ansi(msg, fg=None, bg=None, style=Style([])):
         return Colorsh.decorate(msg, "ansi", fg, bg, style)
 
     @staticmethod
-    def tmux(msg, fg=None, bg=None, style=[]):
+    def tmux(msg, fg=None, bg=None, style=Style([])):
         return Colorsh.decorate(msg, "tmux", fg, bg, style)
 
